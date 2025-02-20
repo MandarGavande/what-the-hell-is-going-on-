@@ -1,0 +1,106 @@
+import 'package:flutter/material.dart';
+import 'dart:async';
+
+void main() {
+  runApp(StopwatchTimerApp());
+}
+
+class StopwatchTimerApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Stopwatch & Timer by Mandar Gavande',
+      theme: ThemeData.dark(),
+      home: StopwatchTimerScreen(),
+    );
+  }
+}
+
+class StopwatchTimerScreen extends StatefulWidget {
+  @override
+  _StopwatchTimerScreenState createState() => _StopwatchTimerScreenState();
+}
+
+class _StopwatchTimerScreenState extends State<StopwatchTimerScreen> {
+  Stopwatch _stopwatch = Stopwatch();
+  Timer? _timer;
+  int _countdownSeconds = 60;
+  Timer? _countdownTimer;
+
+  void _startStopwatch() {
+    if (!_stopwatch.isRunning) {
+      _stopwatch.start();
+      _timer = Timer.periodic(Duration(milliseconds: 100), (timer) {
+        setState(() {});
+      });
+    }
+  }
+
+  void _stopStopwatch() {
+    _stopwatch.stop();
+    _timer?.cancel();
+    setState(() {});
+  }
+
+  void _resetStopwatch() {
+    _stopwatch.stop();
+    _stopwatch.reset();
+    _timer?.cancel();
+    setState(() {});
+  }
+
+  void _startTimer() {
+    _countdownTimer?.cancel();
+    _countdownTimer = Timer.periodic(Duration(seconds: 1), (timer) {
+      setState(() {
+        if (_countdownSeconds > 0) {
+          _countdownSeconds--;
+        } else {
+          _countdownTimer?.cancel();
+        }
+      });
+    });
+  }
+
+  void _resetTimer() {
+    _countdownTimer?.cancel();
+    setState(() {
+      _countdownSeconds = 60;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: Text('Stopwatch & Timer - Mandar Gavande')),
+      body: Padding(
+        padding: EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Text('Stopwatch:', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+            Text(_stopwatch.elapsed.inSeconds.toString() + 's', style: TextStyle(fontSize: 30)),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                ElevatedButton(onPressed: _startStopwatch, child: Text('Start')),
+                ElevatedButton(onPressed: _stopStopwatch, child: Text('Stop')),
+                ElevatedButton(onPressed: _resetStopwatch, child: Text('Reset')),
+              ],
+            ),
+            SizedBox(height: 20),
+            Text('Timer:', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+            Text(_countdownSeconds.toString() + 's', style: TextStyle(fontSize: 30)),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                ElevatedButton(onPressed: _startTimer, child: Text('Start Timer')),
+                ElevatedButton(onPressed: _resetTimer, child: Text('Reset Timer')),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
